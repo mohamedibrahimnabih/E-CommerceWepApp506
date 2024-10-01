@@ -1,0 +1,23 @@
+﻿<div class="row">
+    <div class="col text-center mb-5">
+        <h1 class="display-4 font-weight-bolder">Bootstrap 5 Cards With Background Image</h1>
+        <p class="lead">Lorem ipsum dolor sit amet at enim hac integer volutpat maecenas pulvinar. </p>
+    </div>
+</div>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-4">
+            <div class="card" style="width: 18rem;">
+                <img src="~/images/@item.PhotoUrl" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">@item.Name</h5>
+                    <p class="card-text">@item.Description</p>
+                    <span class="badge text-bg-warning">Price: @item.Price</span><br><br>
+                    <a href="/Home/Details?id=@item.Id" class="btn btn-primary">Show More...</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
