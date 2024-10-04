@@ -27,5 +27,31 @@ namespace E_Commerce.Controllers
             dbContext.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
+
+        public IActionResult Edit(int categoryId)
+        {
+            var category = dbContext.Categories.Find(categoryId);
+
+            if(category != null)
+                return View(model: category);
+
+            return RedirectToAction("NotFound", "Home");
+        }
+
+        [HttpPost]
+        public IActionResult Edit(Category category)
+        {
+            //Category category = new() { Id = Id, Name = Name };
+            dbContext.Categories.Update(category);
+            dbContext.SaveChanges();
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Delete(int categoryId)
+        {
+            dbContext.Categories.Remove(new() { Id = categoryId });
+            dbContext.SaveChanges();
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
