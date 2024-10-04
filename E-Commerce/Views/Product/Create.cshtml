@@ -1,0 +1,61 @@
+﻿@model IEnumerable<Category>
+
+<div class="row">
+    <div class="col-12 mb-3">
+        <h2><a href="/Product/Index"><i class="bi bi-arrow-left"></i></a> Create New Product</h2>
+    </div>
+</div>
+
+<div class="row">
+    <form action="/Product/Create" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="exampleProductName" class="form-label">Product Name</label>
+            <input type="text" class="form-control" id="exampleProductName" name="Name">
+        </div>
+        <div class="mb-3">
+            <label for="exampleProductDescription" class="form-label">Product Description</label>
+            <input type="text" class="form-control" id="exampleProductDescription" name="Description">
+        </div>
+        <div class="mb-3">
+            <label for="exampleProductPrice" class="form-label">Product Price</label>
+            <input type="number" class="form-control" id="exampleProductPrice" name="Price">
+        </div>
+        <div class="mb-3">
+            <label for="exampleProductPhotoUrl" class="form-label">Product Photo</label>
+            <input type="file" class="form-control" id="exampleProductPhotoUrl" name="PhotoUrl" accept="image/*" onchange="previewImage(event)">
+        </div>
+        <div class="mb-3">
+            <!-- Image preview container -->
+            <img id="imagePreview" src="#" alt="Image Preview" style="display:none; width: 200px; height: auto;" />
+        </div>
+        <div class="mb-3">
+            <label for="exampleProductCategoryId" class="form-label">Product CategoryId</label>
+           @*  <input type="number" class="form-control" id="exampleProductCategoryId" name="CategoryId"> *@
+            <select class="form-select" name="CategoryId">
+                @foreach(var item in Model)
+                {
+                    <option value="@item.Id">@item.Name</option>
+                }
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+<script>
+    function previewImage(event) {
+        const reader = new FileReader();
+        const imagePreview = document.getElementById('imagePreview');
+
+        reader.onload = function(){
+            imagePreview.src = reader.result;
+            imagePreview.style.display = 'block'; // Show the image preview
+        }
+
+        if(event.target.files[0]) {
+            reader.readAsDataURL(event.target.files[0]);
+        } else {
+            imagePreview.style.display = 'none'; // Hide the preview if no file is selected
+        }
+    }
+</script>
