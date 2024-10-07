@@ -25,6 +25,14 @@ namespace E_Commerce.Controllers
         {
             dbContext.Categories.Add(category);
             dbContext.SaveChanges();
+
+            //TempData["success"] = "Add category successfully";
+
+            //CookieOptions cookieOptions = new CookieOptions();
+            //cookieOptions.Expires = DateTime.Now.AddDays(14);
+
+            //Response.Cookies.Append("successCookies", "Add category successfully", cookieOptions);
+
             return RedirectToAction(nameof(Index));
         }
 

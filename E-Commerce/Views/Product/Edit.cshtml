@@ -23,15 +23,14 @@
         </div>
         <div class="mb-3">
             <label for="exampleProductPhotoUrl" class="form-label">Product Photo</label>
-            <input type="file" class="form-control" id="exampleProductPhotoUrl" name="PhotoUrl">
+            <input type="file" class="form-control" id="exampleProductPhotoUrl" name="PhotoUrl" onchange="previewImage(event)">
         </div>
         <div class="mb-3">
-            <img src="~/images/@Model.PhotoUrl" alt="Image Preview" style="width: 200px; height: auto;" />
+            <img id="imagePreview" src="~/images/@Model.PhotoUrl" alt="Image Preview" style="width: 200px; height: auto;" />
         </div>
         <div class="mb-3">
             <label for="exampleProductCategoryId" class="form-label">Product CategoryId</label>
-@*              <input type="number" class="form-control" id="exampleProductCategoryId" name="CategoryId" value="@Model.CategoryId">
- *@            <select class="form-select" name="CategoryId">
+            <select class="form-select" name="CategoryId">
                 @foreach (var item in ViewBag.categories)
                 {
                     <option value="@item.Id">@item.Name</option>
@@ -41,3 +40,20 @@
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
+
+<script>
+    function previewImage(event) {
+        const imagePreview = document.getElementById('imagePreview');
+        const file = event.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        } else {
+            imagePreview.src = "~/images/@Model.PhotoUrl"; // Reset to default if no file is selected
+        }
+    }
+</script>
