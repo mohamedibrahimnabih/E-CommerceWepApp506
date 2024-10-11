@@ -17,14 +17,26 @@ namespace E_Commerce.Controllers
 
         public IActionResult Create()
         {
-            return View();
+            Category category = new Category();
+            return View(category);
         }
 
         [HttpPost]
         public IActionResult Create(Category category)
         {
-            dbContext.Categories.Add(category);
-            dbContext.SaveChanges();
+            if (ModelState.IsValid)
+            {
+                // if categeory in the db or not
+                //ModelState.AddModelError();
+                //return View(category);
+
+                dbContext.Categories.Add(category);
+                dbContext.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(category);
+
 
             //TempData["success"] = "Add category successfully";
 
@@ -33,7 +45,6 @@ namespace E_Commerce.Controllers
 
             //Response.Cookies.Append("successCookies", "Add category successfully", cookieOptions);
 
-            return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Edit(int categoryId)
@@ -49,10 +60,15 @@ namespace E_Commerce.Controllers
         [HttpPost]
         public IActionResult Edit(Category category)
         {
-            //Category category = new() { Id = Id, Name = Name };
-            dbContext.Categories.Update(category);
-            dbContext.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            if(ModelState.IsValid)
+            {
+                //Category category = new() { Id = Id, Name = Name };
+                dbContext.Categories.Update(category);
+                dbContext.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(category);
         }
 
         public IActionResult Delete(int categoryId)

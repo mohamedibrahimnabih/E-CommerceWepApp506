@@ -1,4 +1,8 @@
-﻿@model IEnumerable<Category>
+﻿@model Product
+
+@{
+    var categories = (List<Category>)ViewData["categories"];
+}
 
 <div class="row">
     <div class="col-12 mb-3">
@@ -10,33 +14,38 @@
     <form action="/Product/Create" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="exampleProductName" class="form-label">Product Name</label>
-            <input type="text" class="form-control" id="exampleProductName" name="Name">
+            <input type="text" class="form-control" id="exampleProductName" name="Name" value="@Model.Name">
+            <span asp-validation-for="@Model.Name" class="text-warning"></span>
         </div>
         <div class="mb-3">
             <label for="exampleProductDescription" class="form-label">Product Description</label>
-            <input type="text" class="form-control" id="exampleProductDescription" name="Description">
+            <input type="text" class="form-control" id="exampleProductDescription" name="Description" value="@Model.Description">
+            <span asp-validation-for="@Model.Description" class="text-warning"></span>
         </div>
         <div class="mb-3">
             <label for="exampleProductPrice" class="form-label">Product Price</label>
-            <input type="number" class="form-control" id="exampleProductPrice" name="Price">
+            <input type="number" class="form-control" id="exampleProductPrice" name="Price" value="@Model.Price">
+            <span asp-validation-for="@Model.Price" class="text-warning"></span>
         </div>
         <div class="mb-3">
             <label for="exampleProductPhotoUrl" class="form-label">Product Photo</label>
-            <input type="file" class="form-control" id="exampleProductPhotoUrl" name="PhotoUrl" accept="image/*" onchange="previewImage(event)">
+            <input type="file" class="form-control" id="exampleProductPhotoUrl" name="PhotoUrl" accept="image/*" onchange="previewImage(event)" value="@Model.PhotoUrl">
+            <span asp-validation-for="@Model.PhotoUrl" class="text-warning"></span>
         </div>
         <div class="mb-3">
             <!-- Image preview container -->
-            <img id="imagePreview" src="#" alt="Image Preview" style="display:none; width: 200px; height: auto;" />
+            <img id="imagePreview" src="~/temp/@Model.PhotoUrl" alt="Image Preview" style="display:none; width: 200px; height: auto;" />
         </div>
         <div class="mb-3">
             <label for="exampleProductCategoryId" class="form-label">Product CategoryId</label>
            @*  <input type="number" class="form-control" id="exampleProductCategoryId" name="CategoryId"> *@
             <select class="form-select" name="CategoryId">
-                @foreach(var item in Model)
+                @foreach (var item in categories)
                 {
                     <option value="@item.Id">@item.Name</option>
                 }
             </select>
+            <span asp-validation-for="@Model.CategoryId" class="text-warning"></span>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>

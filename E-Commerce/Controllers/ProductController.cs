@@ -20,40 +20,68 @@ namespace E_Commerce.Controllers
         public IActionResult Create()
         {
             var categories = dbContext.Categories.ToList();
+            //ViewBag.categories = categories;
+            ViewData["categories"] = categories;
 
-            return View(categories);
+            return View(new Product());
         }
 
         [HttpPost]
         public IActionResult Create(Product product, IFormFile PhotoUrl)
         {
-            if (PhotoUrl.Length > 0) // 85896
+            //ModelState.Remove("PhotoUrl");
+
+            if (ModelState.IsValid)
+            {
+                if (PhotoUrl.Length > 0) // 85896
+                {
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(PhotoUrl.FileName); // "1.png"
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images", fileName);
+
+                    using (var stream = System.IO.File.Create(filePath))
+                    {
+                        PhotoUrl.CopyTo(stream);
+                    }
+
+                    product.PhotoUrl = fileName;
+
+                    //return PhotoUrl.FileName;
+                }
+
+                //if (fileName != null)
+                //{
+                //    product.PhotoUrl = fileName;
+                //}
+                //else
+                //{
+                //    product.PhotoUrl = " ";
+                //}
+
+                dbContext.Products.Add(product);
+                dbContext.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+
+
+            // save photo in wwwroot 
+
+
+            if(PhotoUrl!= null)
             {
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(PhotoUrl.FileName); // "1.png"
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images", fileName);
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\temp", fileName);
 
                 using (var stream = System.IO.File.Create(filePath))
                 {
                     PhotoUrl.CopyTo(stream);
                 }
 
-                product.PhotoUrl = fileName;
-
-                //return PhotoUrl.FileName;
+                product.PhotoUrl = filePath;
             }
 
-            //if (fileName != null)
-            //{
-            //    product.PhotoUrl = fileName;
-            //}
-            //else
-            //{
-            //    product.PhotoUrl = " ";
-            //}
-
-            dbContext.Products.Add(product);
-            dbContext.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            var categories = dbContext.Categories.ToList();
+            ViewBag.categories = categories;
+            return View(product);
         }
 
         public IActionResult Edit(int productId)
@@ -73,52 +101,57 @@ namespace E_Commerce.Controllers
         [HttpPost]
         public IActionResult Edit(Product product, IFormFile PhotoUrl)
         {
-            //var fileName = UploadImg(PhotoUrl);
-
-            var oldProduct = dbContext.Products.Where(e=>e.Id == product.Id).AsNoTracking().FirstOrDefault();
-            if (PhotoUrl != null) // 85896
+             var oldProduct = dbContext.Products.AsNoTracking().FirstOrDefault(e => e.Id == product.Id);
+            if(ModelState.IsValid)
             {
-                var oldPhotoPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images", oldProduct.PhotoUrl);
-
-
-                if (System.IO.File.Exists(oldPhotoPath))
+                if (PhotoUrl != null && PhotoUrl.Length > 0) // 85896
                 {
-                    System.IO.File.Delete(oldPhotoPath);
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(PhotoUrl.FileName); // "0283dasda2032-321321983lkjwlkds.png"
+
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images", fileName);
+
+                    var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images", product.PhotoUrl);
+
+                    using (var stream = System.IO.File.Create(filePath))
+                    {
+                        PhotoUrl.CopyTo(stream);
+                    }
+
+                    if (System.IO.File.Exists(oldFilePath))
+                    {
+                        System.IO.File.Delete(oldFilePath);
+                    }
+
+                    product.PhotoUrl = fileName;
+                }
+                else
+                {
+                    product.PhotoUrl = oldProduct.PhotoUrl;
                 }
 
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(PhotoUrl.FileName); // "1.png"
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images", fileName);
-
-                using (var stream = System.IO.File.Create(filePath))
-                {
-                    PhotoUrl.CopyTo(stream);
-                }
-
-                product.PhotoUrl = fileName;
-
-                //return PhotoUrl.FileName;
-            }
-            else
-            {
-                product.PhotoUrl = oldProduct.PhotoUrl;
+                dbContext.Products.Update(product);
+                dbContext.SaveChanges();
+                return RedirectToAction(nameof(Index));
             }
 
-            //if (fileName != null)
-            //{
-            //    product.PhotoUrl = fileName;
-            //}
-            //else
-            //{
-            //    product.PhotoUrl = " ";
-            //}
 
-            dbContext.Products.Update(product);
-            dbContext.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            product.PhotoUrl = oldProduct.PhotoUrl;
+            var categories = dbContext.Categories.ToList();
+            ViewBag.categories = categories;
+            return View(product);
         }
 
         public IActionResult Delete(int productId)
         {
+            var oldProduct = dbContext.Products.Find(productId);
+
+            var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images", oldProduct.PhotoUrl);
+
+            if (System.IO.File.Exists(oldFilePath))
+            {
+                System.IO.File.Delete(oldFilePath);
+            }
+
             dbContext.Products.Remove(new() { Id = productId });
             dbContext.SaveChanges();
             return RedirectToAction(nameof(Index));
