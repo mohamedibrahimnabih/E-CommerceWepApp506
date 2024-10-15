@@ -2,6 +2,7 @@
 using E_Commerce.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace E_Commerce.Controllers
@@ -19,7 +20,7 @@ namespace E_Commerce.Controllers
 
         public IActionResult Create()
         {
-            var categories = dbContext.Categories.ToList();
+            var categories = dbContext.Categories.ToList().Select(e=> new SelectListItem { Text = e.Name, Value = e.Id.ToString() });
             //ViewBag.categories = categories;
             ViewData["categories"] = categories;
 
@@ -102,6 +103,8 @@ namespace E_Commerce.Controllers
         public IActionResult Edit(Product product, IFormFile PhotoUrl)
         {
              var oldProduct = dbContext.Products.AsNoTracking().FirstOrDefault(e => e.Id == product.Id);
+            ModelState.Remove("PhotoUrl");
+            //TryValidateModel(product);
             if(ModelState.IsValid)
             {
                 if (PhotoUrl != null && PhotoUrl.Length > 0) // 85896

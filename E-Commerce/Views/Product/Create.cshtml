@@ -1,7 +1,7 @@
 ﻿@model Product
 
 @{
-    var categories = (List<Category>)ViewData["categories"];
+    var categories = (IEnumerable<SelectListItem>)ViewData["categories"];
 }
 
 <div class="row">
@@ -39,12 +39,15 @@
         <div class="mb-3">
             <label for="exampleProductCategoryId" class="form-label">Product CategoryId</label>
            @*  <input type="number" class="form-control" id="exampleProductCategoryId" name="CategoryId"> *@
-            <select class="form-select" name="CategoryId">
+            @* <select class="form-select" name="CategoryId">
                 @foreach (var item in categories)
                 {
                     <option value="@item.Id">@item.Name</option>
                 }
-            </select>
+            </select> *@
+
+            <select class="form-select" asp-for="CategoryId" asp-items="categories"></select>
+
             <span asp-validation-for="@Model.CategoryId" class="text-warning"></span>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
