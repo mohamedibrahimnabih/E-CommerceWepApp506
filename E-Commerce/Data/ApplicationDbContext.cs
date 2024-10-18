@@ -5,6 +5,16 @@ namespace E_Commerce.Data
 {
     public class ApplicationDbContext : DbContext
     {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options)
+        {
+        }
+
+        public ApplicationDbContext()
+        {
+            
+        }
+
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Company> Companies { get; set; }

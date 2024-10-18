@@ -1,5 +1,7 @@
 ﻿using E_Commerce.Data;
 using E_Commerce.Models;
+using E_Commerce.Repository;
+using E_Commerce.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,11 +9,22 @@ namespace E_Commerce.Controllers
 {
     public class CategoryController : Controller
     {
-        ApplicationDbContext dbContext = new ApplicationDbContext();
+        //ApplicationDbContext dbContext = new ApplicationDbContext();
+
+        //CategoryRepository categoryRepository = new CategoryRepository();
+
+        ICategoryRepository categoryRepository;
+        public CategoryController(ICategoryRepository categoryRepository)
+        {
+            this.categoryRepository = categoryRepository;
+        }
+
+
 
         public IActionResult Index()
         {
-            var categories = dbContext.Categories.Include(e=>e.Products).ToList();
+            // var categories = dbContext.Categories.Include("Product").ToList();
+            var categories = categoryRepository.GetAll("Products");
 
             return View(model: categories);
         }
@@ -31,8 +44,8 @@ namespace E_Commerce.Controllers
                 //ModelState.AddModelError();
                 //return View(category);
 
-                dbContext.Categories.Add(category);
-                dbContext.SaveChanges();
+                categoryRepository.Create(category);
+                categoryRepository.Commit();
                 return RedirectToAction(nameof(Index));
             }
 
@@ -50,9 +63,9 @@ namespace E_Commerce.Controllers
 
         public IActionResult Edit(int categoryId)
         {
-            var category = dbContext.Categories.Find(categoryId);
+            var category = categoryRepository.GetById(categoryId);
 
-            if(category != null)
+            if (category != null)
                 return View(model: category);
 
             return RedirectToAction("NotFound", "Home");
@@ -64,8 +77,8 @@ namespace E_Commerce.Controllers
             if(ModelState.IsValid)
             {
                 //Category category = new() { Id = Id, Name = Name };
-                dbContext.Categories.Update(category);
-                dbContext.SaveChanges();
+                categoryRepository.Edit(category);
+                categoryRepository.Commit();
                 return RedirectToAction(nameof(Index));
             }
 
@@ -74,8 +87,10 @@ namespace E_Commerce.Controllers
 
         public IActionResult Delete(int categoryId)
         {
-            dbContext.Categories.Remove(new() { Id = categoryId });
-            dbContext.SaveChanges();
+            var category = categoryRepository.GetById(categoryId);
+
+            categoryRepository.Delete(category);
+            categoryRepository.Commit();
             return RedirectToAction(nameof(Index));
         }
     }
