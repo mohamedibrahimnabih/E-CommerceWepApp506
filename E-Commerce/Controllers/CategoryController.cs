@@ -2,11 +2,14 @@
 using E_Commerce.Models;
 using E_Commerce.Repository;
 using E_Commerce.Repository.IRepository;
+using E_Commerce.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace E_Commerce.Controllers
 {
+    [Authorize(Roles = $"{SD.adminRole},{SD.companyRole}")]
     public class CategoryController : Controller
     {
         //ApplicationDbContext dbContext = new ApplicationDbContext();
@@ -19,12 +22,10 @@ namespace E_Commerce.Controllers
             this.categoryRepository = categoryRepository;
         }
 
-
-
         public IActionResult Index()
         {
-            // var categories = dbContext.Categories.Include("Product").ToList();
-            var categories = categoryRepository.GetAll("Products");
+            // var categories = dbContext.Categories.Include(e=>e.Product).ToList();
+            var categories = categoryRepository.Get([e=>e.Products], tracked: false);
 
             return View(model: categories);
         }
@@ -63,7 +64,7 @@ namespace E_Commerce.Controllers
 
         public IActionResult Edit(int categoryId)
         {
-            var category = categoryRepository.GetById(categoryId);
+            var category = categoryRepository.GetOne( expression: e=>e.Id == categoryId );
 
             if (category != null)
                 return View(model: category);
@@ -87,7 +88,10 @@ namespace E_Commerce.Controllers
 
         public IActionResult Delete(int categoryId)
         {
-            var category = categoryRepository.GetById(categoryId);
+            var category = categoryRepository.GetOne(expression: e => e.Id == categoryId);
+
+            if (category == null)
+                return RedirectToAction("NotFound", "Home");
 
             categoryRepository.Delete(category);
             categoryRepository.Commit();

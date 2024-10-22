@@ -1,7 +1,9 @@
 ﻿using E_Commerce.Models;
+using E_Commerce.Utility;
 using E_Commerce.ViewModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace E_Commerce.Controllers
 {
@@ -9,15 +11,24 @@ namespace E_Commerce.Controllers
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly RoleManager<IdentityRole> roleManager;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.roleManager = roleManager;
         }
 
-        public IActionResult Register()
+        public async Task<IActionResult> Register()
         {
+            if(roleManager.Roles.IsNullOrEmpty())
+            {
+                await roleManager.CreateAsync(new(SD.adminRole));
+                await roleManager.CreateAsync(new(SD.companyRole));
+                await roleManager.CreateAsync(new(SD.CustomerRole));
+            }
+
             return View();
         }
 
@@ -37,6 +48,10 @@ namespace E_Commerce.Controllers
                 var result = await userManager.CreateAsync(applicationUser, userVm.Password);
                 if(result.Succeeded)
                 {
+                    // Ok
+                    // Assign role to user
+                    await userManager.AddToRoleAsync(applicationUser, SD.CustomerRole);
+                    await signInManager.SignInAsync(applicationUser, false);
                     return RedirectToAction("Index", "Home");
                 }
 
