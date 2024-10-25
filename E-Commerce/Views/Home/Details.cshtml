@@ -8,6 +8,17 @@
                 <h5 class="card-title">@Model.Name</h5>
                 <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
                 <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                <form action="/Cart/AddToCart">
+                    <input type="hidden" name="productId" value="@Model.Id" />
+                    <div class="row d-flex mb-3">
+                        <div class="col-8">
+                            <input type="number" class="form-control" name="count" placeholder="Count...">
+                        </div>
+                        <div class="col-4">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

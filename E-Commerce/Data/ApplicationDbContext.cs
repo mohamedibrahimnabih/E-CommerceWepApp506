@@ -20,6 +20,7 @@ namespace E_Commerce.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Company> Companies { get; set; }
+        public DbSet<Cart> Carts { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -32,7 +33,13 @@ namespace E_Commerce.Data
 
             optionsBuilder.UseSqlServer(connection);
         }
-        public DbSet<E_Commerce.ViewModel.ApplicationUserVM> ApplicationUserVM { get; set; } = default!;
-        public DbSet<E_Commerce.ViewModel.LoginVM> LoginVM { get; set; } = default!;
+
+        //protected override void OnModelCreating(ModelBuilder builder)
+        //{
+        //    base.OnModelCreating(builder);
+
+        //    builder.Entity<Product>()
+        //        .HasMany(e=>e.)
+        //}
     }
 }

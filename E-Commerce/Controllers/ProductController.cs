@@ -14,11 +14,23 @@ namespace E_Commerce.Controllers
     {
         ApplicationDbContext dbContext = new ApplicationDbContext();
 
-        public IActionResult Index()
+        public IActionResult Index(string? query = null, int pageNumber = 1)
         {
-            var products = dbContext.Products.Include(e=>e.Category).ToList();
+            IQueryable<Product> products = dbContext.Products.Include(e => e.Category);
 
-            return View(model: products);
+            if(pageNumber -1 <= products.Count() / 5)
+            {
+                if (query != null)
+                {
+                    products = products.Where(e => e.Name.Contains(query));
+                }
+                products = products.Skip((pageNumber - 1) * 5).Take(5);
+                
+                return View(model: products.ToList());
+
+            }
+
+            return RedirectToAction("NotFound", "Home");
         }
 
         public IActionResult Create()

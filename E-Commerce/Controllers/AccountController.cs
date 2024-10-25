@@ -12,12 +12,14 @@ namespace E_Commerce.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly RoleManager<IdentityRole> roleManager;
+        private readonly IEmailSender emailSender;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager, IEmailSender emailSender)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.roleManager = roleManager;
+            this.emailSender = emailSender;
         }
 
         public async Task<IActionResult> Register()
@@ -52,6 +54,9 @@ namespace E_Commerce.Controllers
                     // Assign role to user
                     await userManager.AddToRoleAsync(applicationUser, SD.CustomerRole);
                     await signInManager.SignInAsync(applicationUser, false);
+
+                    await emailSender.SendEmailAsync(applicationUser.Email, "confirmation", "bla bla");
+
                     return RedirectToAction("Index", "Home");
                 }
 

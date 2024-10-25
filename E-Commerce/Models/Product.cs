@@ -27,6 +27,5 @@ namespace E_Commerce.Models
         public Category Category { get; set; }
         [ValidateNever]
         public Company Company { get; set; }
-
     }
 }
